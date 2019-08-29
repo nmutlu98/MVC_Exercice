@@ -14,10 +14,16 @@ class Admin extends CI_Controller{
 		$user = $this->user_model->get_user($username,$password)->row_array();
 		if(!empty($user) && $user['is_admin']){
 			$page_data['title'] = "Admin";
+			$this->session->set_userdata(array('admin_logged'=>1));
 			$this->load->view('admin_main/main_screen',$page_data);
+
 		} else{
 			echo "You are not authorized to see this page";
 		}
+	}
+	public function main_screen(){
+		$page_data['title'] = "Admin";
+		$this->load->view('admin_main/main_screen',$page_data);
 	}
 }
 ?>
