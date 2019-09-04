@@ -10,6 +10,9 @@ class User_model extends CI_Model{
 	public function get_user($username,$pass){
 		return $this->db->get_where('users',array('user_name'=>$username,'password'=>$pass));
 	}
+	public function get_user_by_id($id){
+		return $this->db->get_where('users',array('id'=>$id));
+	}
 	public function make_authorized($arr){
 		$user = $this->db->get_where('users',array('first_name'=>strtolower($arr['first_name']),'last_name'=>strtolower($arr['last_name'])));
 		$data = array();
@@ -53,6 +56,17 @@ class User_model extends CI_Model{
 		} else{
 			
 		}
+	}
+	public function register_user($data){
+		return $this->db->insert('users',$data);
+	}
+	public function add_permission($permission_id){
+		$per = $this->db->get_where('pending_permissions',array('id'=>$permission_id))->row_array();
+		$user_per = implode(",",$this->get_user_permissions($per['user']));
+		$user_per.=",".$per['commitee_id'];
+		$this->db->set('permissions',$user_per);
+		$this->db->where(array('id'=>$per['user']));
+		return $this->db->update('users');
 	}
 }
 
