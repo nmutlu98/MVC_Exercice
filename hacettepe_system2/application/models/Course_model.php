@@ -27,6 +27,9 @@ class Course_model extends CI_Model{
 		}
 		return 0;
 	}
+	public function get_courses(){
+		return $this->db->get('courses');
+	}
 	public function add_course($course_name){
 		$data['course_name'] = strtolower($course_name);
 		$this->db->insert('courses',$data);
@@ -43,6 +46,9 @@ class Course_model extends CI_Model{
 		$data['course_documents'] = $this->get_course_documents($course_id)->row_array()['course_documents'].",".$str;
 		$this->db->where(array('id'=>$course_id));
 		$this->db->update('courses',$data);
+	}
+	public function update_course($id,$data){
+		return $this->db->where(array('id'=>$id))->update('commitees',$data);
 	}
 
 }
