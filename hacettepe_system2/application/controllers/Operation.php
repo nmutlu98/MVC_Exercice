@@ -14,13 +14,26 @@ class Operation extends CI_Controller{
 			$this->load->view('admin_main/add_course');
 	}
 	public function add_document(){
-			$this->load->view('admin_main/add_document');
+			$page_data['courses'] = $this->course_model->get_courses()->result_array();
+			$this->load->view('admin_main/add_document',$page_data);
 	}
 	public function add_authorized_person(){
 			$this->load->view('admin_main/add_authorized_person');
 	}
 	public function give_permissions(){
-			$this->load->view('admin_main/give_permissions');
+		$page_data['permissions'] = array();
+		$res = $this->commitee_model->get_pending_permissions()->result_array();
+		$say = 0;
+		foreach ($res as $r) {
+		 	$user = $this->user_model->get_user_by_id($r['user'])->row_array();
+		 	$commitee = $this->commitee_model->get_commitee_by_id($r['commitee_id'])->row_array();
+		 	$page_data['permissions'][$say]['first_name'] = $user['first_name'];
+		 	$page_data['permissions'][$say]['last_name'] = $user['last_name'];
+		 	$page_data['permissions'][$say]['commitee_name'] = $commitee['commitee_name'];
+		 	$page_data['permissions'][$say]['id'] = $r['id'];
+		 	$say++;
+		}
+		$this->load->view('admin_main/give_permissions',$page_data);
 	}
 	public function save_commitee(){
 		$this->user_model->initialize_permissions(1);
@@ -65,7 +78,8 @@ class Operation extends CI_Controller{
         }	
         $res = $this->document_model->add_document($data);
         $r = $this->course_model->add_document(array($data['commitee'],$this->document_model->get_document_id($data['document_name'])),$data['course']);
-		if($res && empty($error['error'])){
+        $in_commitee = $this->commitee_model->is_course($data['commitee'],$data['course']);
+		if($res && empty($error['error']) && $in_commitee){
 			$this->load->view('admin_main/add_document'); ?>
 			<script type="text/javascript">
 				alert("İşlem Başarılı");
@@ -115,6 +129,10 @@ class Operation extends CI_Controller{
 		} else{
 
 		}
+	}
+	public function update_commitee(){
+		$page_data['commitees'] = $this->commitee_model->get_commitees()->result_array();
+		$this->load->view('admin_main/update_commitee',$page_data);
 	}
 
 
